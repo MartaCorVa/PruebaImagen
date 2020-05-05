@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imagenJuego;
     private Button boton;
     private byte[] foto;
-    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +88,9 @@ public class MainActivity extends AppCompatActivity {
             int serverResponseCode = 0;
 
             //parameters
-            String link = "http://192.168.0.167:45455/api/juego/insertarimagenjuego";
+           // String link = "http://192.168.0.167:45455/api/juego/insertarimagenjuego";
+            String link = "http://192.168.0.167:45455/api/juego/postgameimage";
+            String idJuego = "1";
 
             try {
                 System.setProperty("http.keepAlive","false");
@@ -118,9 +119,21 @@ public class MainActivity extends AppCompatActivity {
                 conn.setRequestProperty("Accept-Encoding", "");
                 //conn.setRequestProperty("Connection", "Keep-Alive");
                 conn.setRequestProperty("ENCTYPE", "multipart/form-data");
+                conn.setRequestProperty("Accept", "multipart/form-data");
                 conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
 
                 dos = new DataOutputStream(conn.getOutputStream());
+
+                //first parameter - idJuego
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+                dos.writeBytes("Content-Disposition: form-data; name=\"idJuego\"" + lineEnd + lineEnd
+                        + idJuego + lineEnd);
+
+                //forth parameter - filename
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+                dos.writeBytes("Content-Disposition: form-data; name=\"imagenJuego\";filename=\""
+                        + "profile_picture" + "\"" + lineEnd);
+                dos.writeBytes(lineEnd);
 
                 // create a buffer of  maximum size
                 bytesAvailable = fileInputStream.available();
@@ -160,7 +173,6 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             return null;
         }
 
